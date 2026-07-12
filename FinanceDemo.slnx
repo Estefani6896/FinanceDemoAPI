@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="FinanceDemo.Api/FinanceDemo.Api.csproj" />
+  <Project Path="FinanceDemo.Application/FinanceDemo.Application.csproj" />
+  <Project Path="FinanceDemo.Domain/FinanceDemo.Domain.csproj" />
+  <Project Path="FinanceDemo.Infrastructure/FinanceDemo.Infrastructure.csproj" />
+  <Project Path="FinanceDemo.Tests/FinanceDemo.Tests.csproj" Id="a23581ab-b9ff-4496-b4f2-8f1ab85748fe" />
+</Solution>
