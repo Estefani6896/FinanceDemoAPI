@@ -84,12 +84,20 @@ builder.Services.AddCors(options =>
 #endregion
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var context =
+        scope.ServiceProvider.GetRequiredService<FinanceDemoDbContext>();
 
+    context.Database.Migrate();
+
+    SeedData.Initialize(context);
+}
 #region Middleware
 
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
+app.UseSwagger();
 
     app.UseSwaggerUI(options =>
     {
