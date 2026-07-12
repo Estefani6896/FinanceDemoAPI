@@ -87,8 +87,8 @@ var app = builder.Build();
 
 #region Middleware
 
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
 
     app.UseSwaggerUI(options =>
@@ -97,7 +97,7 @@ if (app.Environment.IsDevelopment())
             "/swagger/v1/swagger.json",
             "FinanceDemo API v1");
     });
-}
+//}
 
 app.UseHttpsRedirection();
 
@@ -109,4 +109,12 @@ app.MapControllers();
 
 #endregion
 
+using (var scope = app.Services.CreateScope())
+{
+    var db =
+        scope.ServiceProvider
+             .GetRequiredService<FinanceDemoDbContext>();
+
+    db.Database.Migrate();
+}
 app.Run();
