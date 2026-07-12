@@ -24,7 +24,7 @@ namespace FinanceDemo.Infrastructure.Services
             {
                 throw new Exception("Exchange rate service unavailable.");
             }
-
+            
             return new ExchangeRateResponse
             {
                 BaseCurrency = response.Data.Base,
@@ -36,9 +36,22 @@ namespace FinanceDemo.Infrastructure.Services
         }
         public async Task<decimal> GetExchangeRateAsync()
         {
-            var response =
-                await _httpClient.GetFromJsonAsync<HexaRateResponseModel>(
-                    "https://hexarate.paikama.co/api/rates/USD/BOB/latest");
+            var httpResponse = await _httpClient.GetAsync(
+                "https://hexarate.paikama.co/api/rates/USD/BOB/latest");
+
+            var content = await httpResponse.Content.ReadAsStringAsync();
+
+            Console.WriteLine($"Status: {httpResponse.StatusCode}");
+            Console.WriteLine($"Content: {content}");
+
+            httpResponse.EnsureSuccessStatusCode();
+
+            var response = System.Text.Json.JsonSerializer.Deserialize<HexaRateResponseModel>(
+                content,
+                new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
 
             if (response == null)
             {
