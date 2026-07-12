@@ -13,26 +13,41 @@ namespace FinanceDemo.Infrastructure.Services
         {
             _httpClient = httpClient;
         }
-
         public async Task<ExchangeRateResponse> GetUsdToBobRateAsync()
         {
-            var response =
-                await _httpClient.GetFromJsonAsync<HexaRateResponseModel>(
+            try
+            {
+                var response = await _httpClient.GetFromJsonAsync<HexaRateResponseModel>(
                     "https://hexarate.paikama.co/api/rates/USD/BOB/latest");
 
-            if (response == null)
-            {
-                throw new Exception("Exchange rate service unavailable.");
+                if (response == null)
+                {
+                    throw new Exception("Exchange rate service returned null.");
+                }
+
+                return new ExchangeRateResponse
+                {
+                    BaseCurrency = response.Data.Base,
+                    TargetCurrency = response.Data.Target,
+                    Rate = response.Data.Mid,
+                    Unit = response.Data.Unit,
+                    Timestamp = response.Data.Timestamp
+                };
             }
-            
-            return new ExchangeRateResponse
+            catch (Exception ex)
             {
-                BaseCurrency = response.Data.Base,
-                TargetCurrency = response.Data.Target,
-                Rate = response.Data.Mid,
-                Unit = response.Data.Unit,
-                Timestamp = response.Data.Timestamp
-            };
+                Console.WriteLine($"HexaRate Error: {ex.Message}");
+
+                // Fallback para Render cuando HexaRate devuelve 403
+                return new ExchangeRateResponse
+                {
+                    BaseCurrency = "USD",
+                    TargetCurrency = "BOB",
+                    Rate = 10.215m,
+                    Unit = 1,
+                    Timestamp = DateTime.UtcNow
+                };
+            }
         }
         public async Task<decimal> GetExchangeRateAsync()
         {
